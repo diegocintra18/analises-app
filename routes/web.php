@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Bling\BlingController;
 use App\Http\Controllers\Irroba\IrrobaController;
+use App\Http\Controllers\Integrations\IntegrationsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,13 +24,16 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
-Route::get('/integracoes', function () {
-    return view('integrations.integrations');
-})->middleware(['auth'])->name('integrations');
 
-//Rotas de Configurações
+Route::middleware(['auth'])->group(function(){
+    Route::get('/integracoes', [IntegrationsController::class, 'index'])->name('integrations.index');
+    //Route::get('/integracoes', function(){ return view('integrations.integrations');  });
+});
+
+
 Route::middleware(['auth'])->group(function () {
     Route::post('/salvar-usuario-irroba', [IrrobaController::class, 'store'])->name('irroba.store');
+    Route::post('/salvar-usuario-bling', [BlingController::class, 'store'])->name('bling.store');
 });
 
 require __DIR__.'/auth.php';

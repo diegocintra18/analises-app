@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Integrations extends Model
 {
     use HasFactory;
+
+    protected $table = 'integrations';
+
+    protected $fillable = ['name', 'status'];
 }

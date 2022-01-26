@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Dashboard')
+@section('title', 'Integrações')
 
 @section('content_header')
     <h1>Integrações</h1>
@@ -18,6 +18,7 @@
         </div>
     </div>
 @endif
+
 
 @if(session('mensage'))
     <div class="col-12">
@@ -52,8 +53,23 @@
     </div>
     <h2>ERP's</h2>
     <hr/>
-    <h2>Hubs de Marketplaces</h2>
-    <hr/>
+    <div class="row">
+        <div class="col-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Bling</h3>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Status: <span class="badge badge-pill badge-success">Conectado</span></p>
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#integrationBling">
+                       Conectar
+                     </button>
+                    <a href="/irroba/delete" class="btn btn-danger">Desativar</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
  
  <!-- Modal Integrion Irroba -->
@@ -77,6 +93,36 @@
                     <div class="form-group">
                         <label for="pass">Senha</label>
                         <input type="password" name="password" class="form-control" id="pass">
+                    </div>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Salvar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+</div>
+ <!-- Modal Integrion Irroba -->
+ <div class="modal fade" id="integrationBling" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Bling</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                
+                <form action="{{ route('bling.store') }}" method="post" enctype="multipart/form-data">
+                    @csrf
+                    <div class="form-group">
+                        <label for="user">Nome da conta:</label>
+                        <input type="text" name="account_name" class="form-control" id="account_name">
+                    </div>
+                    <div class="form-group">
+                        <label for="user">Usuário API</label>
+                        <input type="text" name="api_key" class="form-control" id="account_name">
                     </div>
                     <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Salvar</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>

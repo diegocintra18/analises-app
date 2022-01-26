@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Integrations;
+namespace App\Http\Controllers\Bling;
 
 use App\Http\Controllers\Controller;
+use App\Models\Bling;
 use App\Models\Integrations\Integrations;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
-class IntegrationsController extends Controller
+class BlingController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,12 +17,7 @@ class IntegrationsController extends Controller
      */
     public function index()
     {
-        $data = Integrations::select()->get()->all();
-        return view('integrations.integrations', compact('data'));
-    }
-
-    public function saveIntegration($name){
-        $post = Integrations::create(['name' => $name, 'status' => 1]);
+        //
     }
 
     /**
@@ -41,7 +38,22 @@ class IntegrationsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->all();
+        $key = $data['api_key'];
+
+        $bling = $this->validateBling($key);
+
+        if($bling == TRUE){
+            Bling::create($data);
+
+            $integration = new Integrations();
+            $integration->saveIntegration('Bling - '. $data['account_name']);
+            
+            return redirect()->back()->with('message', 'Conexão realizada com sucesso!');
+        } else{
+            return redirect()->back()->with('error', 'Erro ao realizar a conexão com o Bling, verifique o usuário API e tente novamente!');
+        }
+        
     }
 
     /**
@@ -88,6 +100,16 @@ class IntegrationsController extends Controller
     {
         //
     }
+
+    public function validateBling($key){
+        $client = new \GuzzleHttp\Client();
+        $baseUrl = 'https://bling.com.br/Api/v2/produtos/json/?apikey=' . $key;
+
+        try {
+            $response = $client->request('GET', $baseUrl);
+            return TRUE;
+        } catch (\Exception $e) {
+            return FALSE;
+        }
+    }
 }
-
-

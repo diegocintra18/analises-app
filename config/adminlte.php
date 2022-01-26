@@ -247,6 +247,11 @@ return [
             'can'  => 'manage-blog',
         ],
         [
+            'text'        => 'Integrações',
+            'url'         => '/integracoes',
+            'icon'        => 'far fa-fw fa-file',
+        ],
+        [
             'text'        => 'pages',
             'url'         => 'admin/pages',
             'icon'        => 'far fa-fw fa-file',

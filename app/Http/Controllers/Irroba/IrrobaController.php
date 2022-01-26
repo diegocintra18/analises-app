@@ -26,7 +26,7 @@ class IrrobaController extends Controller
                 $this->getAuthIrroba();
 
                 $integration = new Integrations();
-                $saveIntegration = $integration->saveIntegration('Irroba');
+                $integration->saveIntegration('Irroba');
     
                 return redirect()->back()->with('message', "Usuário e senha salvos com sucesso!");
                 
