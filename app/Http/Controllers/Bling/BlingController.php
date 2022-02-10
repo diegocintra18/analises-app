@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Bling;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Integrations\IntegrationsController;
+use App\Jobs\ImportBlingProducts;
 use App\Models\Bling;
 use App\Models\Integrations\Integrations;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use stdClass;
 
 class BlingController extends Controller
 {
@@ -18,6 +21,49 @@ class BlingController extends Controller
     public function index()
     {
         //
+    }
+
+    public function syncProducts(){
+        
+        //Obtendo API key do Bling
+        $data = Bling::select('api_key')->get()->first();
+        $apiKey = $data['api_key'];
+
+        $key = new stdClass();
+        $key->key = $apiKey;
+
+        ImportBlingProducts::dispatch($key);
+
+        $client = new \GuzzleHttp\Client();
+
+        $pagination = TRUE;
+        $i = 1;
+
+        $baseUrl = 'https://bling.com.br/Api/v2/produtos/page=' . $i . ' /json/?apikey=' . $key->key;
+        $response = $client->request('GET', $baseUrl, [
+            'form_params' => [
+                'tipo' => 'P'
+            ]
+        ]);
+        $data = $response->getBody();
+        $products = json_decode($data, TRUE);
+
+        if(isset($products["retorno"]["erros"][0]["erro"])){
+            $pagination = FALSE;
+        } else{
+            
+            $data = $products["retorno"]["produtos"];
+
+            foreach($data as $product){
+                echo "<br>";
+                echo "<pre>", var_dump($product), "</pre>";
+            }
+        }
+
+
+
+        //return redirect()->back()->with('mensage', 'A importação de produtos foi iniciada, aguarde alguns instantes para visualizar os mesmos em seu painel');
+
     }
 
     /**
@@ -46,8 +92,10 @@ class BlingController extends Controller
         if($bling == TRUE){
             Bling::create($data);
 
-            $integration = new Integrations();
-            $integration->saveIntegration('Bling - '. $data['account_name']);
+            $integration = new IntegrationsController();
+            $name = 'Bling - ' . $data['account_name'];
+            
+            $integration->saveIntegration($name);
             
             return redirect()->back()->with('message', 'Conexão realizada com sucesso!');
         } else{

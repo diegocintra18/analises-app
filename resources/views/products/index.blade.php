@@ -3,36 +3,28 @@
 @section('title', 'Dashboard')
 
 @section('content_header')
-    <h1>Produtos</h1>
+    <div class="row">
+        <div class="col"><h1>Produtos</h1></div>
+        <div class="col">
+            <div class="dropdown float-right">
+                <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
+                  Importar produtos
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="/importar-produtos-bling">Bling</a>
+                </div>
+              </div>
+        </div>
+    </div>
 @stop
 
 @section('content')
 
-@if(session('error'))
-    <div class="col-12">
-        <div class="alert alert-danger">
-            <strong>{{ session('error') }}</strong>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    </div>
-@endif
+@include('layouts.info_message')
 
-@if(session('mensage'))
-    <div class="col-12">
-        <div class="alert alert-success">
-            <strong>{{ session('mensage') }}</strong>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
+    <div class="container-fluid">
+        
     </div>
-@endif
-
-<div class="container-fluid">
-    
-</div>
  
 @stop
 

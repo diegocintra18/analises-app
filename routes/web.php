@@ -3,6 +3,7 @@
 use App\Http\Controllers\Bling\BlingController;
 use App\Http\Controllers\Irroba\IrrobaController;
 use App\Http\Controllers\Integrations\IntegrationsController;
+use App\Http\Controllers\Products\ProductsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -34,6 +35,11 @@ Route::middleware(['auth'])->group(function(){
 Route::middleware(['auth'])->group(function () {
     Route::post('/salvar-usuario-irroba', [IrrobaController::class, 'store'])->name('irroba.store');
     Route::post('/salvar-usuario-bling', [BlingController::class, 'store'])->name('bling.store');
+    Route::get('/importar-produtos-bling', [BlingController::class, 'syncProducts'])->name('bling.syncProducts');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/produtos', [ProductsController::class, 'index'])->name('products.index');
 });
 
 require __DIR__.'/auth.php';

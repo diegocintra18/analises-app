@@ -247,6 +247,11 @@ return [
             'can'  => 'manage-blog',
         ],
         [
+            'text'        => 'Produtos',
+            'url'         => '/produtos',
+            'icon'        => 'far fa-fw fa-file',
+        ],
+        [
             'text'        => 'Integrações',
             'url'         => '/integracoes',
             'icon'        => 'far fa-fw fa-file',
