@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Bling;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Integrations\IntegrationsController;
+use App\Http\Controllers\Products\ProductsController;
 use App\Jobs\ImportBlingProducts;
 use App\Models\Bling;
 use App\Models\Integrations\Integrations;
@@ -55,8 +56,31 @@ class BlingController extends Controller
             $data = $products["retorno"]["produtos"];
 
             foreach($data as $product){
-                echo "<br>";
-                echo "<pre>", var_dump($product), "</pre>";
+                
+                $data = new ProductsController();
+
+                $prod = new stdClass();
+                $prod->code = $product["produto"]["codigo"];
+                $prod->name = $product["produto"]["descricao"];
+                $prod->price = $product["produto"]["preco"];
+                $prod->cost_price = $product["produto"]["precoCusto"];
+                $prod->image_url = $product["produto"]["imageThumbnail"];
+                
+                if($product["produto"]["situacao"] == "Ativo"){
+                    $prod->status = 1;
+                } else{
+                    $prod->status = 0;
+                }
+                
+                if(isset($product["produto"]["codigoPai"])){
+                    $prod->type = "variation";
+                } else if(isset($product["produto"]["variacoes"])){
+                    $prod->type = "father";
+                } else{
+                    $prod->type = "simple";
+                }
+
+                $data->store($prod);
             }
         }
 

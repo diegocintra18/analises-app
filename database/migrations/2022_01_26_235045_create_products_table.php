@@ -16,9 +16,20 @@ class CreateProductsTable extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('sku');
+            $table->string('name');
+            $table->float('price');
             $table->float('coast_price');
             $table->string('image_url');
-            $table->integer('status');
+            $table->integer('status')->default(1);
+            $table->char('type',30)->default('simples');
+            $table->timestamps();
+        });
+
+        Schema::create('variations', function (Blueprint $table) {
+            $table->id();
+            $table->string('variation_code');
+            $table->string('variation_name');
+            $table->foreignId('product_id')->constrained('products');
             $table->timestamps();
         });
     }
@@ -34,6 +45,13 @@ class CreateProductsTable extends Migration
 
         Schema::table('stocks', function (Blueprint $table) {
             $table->foreignId('stocks_id')
+            ->onDelete('cascade');
+        });
+
+        Schema::dropIfExists('variations');
+
+        Schema::table('variations', function (Blueprint $table) {
+            $table->foreignId('product_id')
             ->onDelete('cascade');
         });
     }

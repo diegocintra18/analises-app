@@ -15,10 +15,8 @@ class CreateStocksTable extends Migration
     {
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
-            $table->string('variation');
             $table->integer('disponibility');
-            $table->char('price_prefix', 2);
-            $table->float('aditional_price');
+            $table->foreignId('product_id')->constrained('products');
             $table->timestamps();
         });
 
@@ -35,5 +33,10 @@ class CreateStocksTable extends Migration
     public function down()
     {
         Schema::dropIfExists('stocks');
+
+        Schema::table('stocks', function (Blueprint $table) {
+            $table->foreignId('product_id')
+            ->onDelete('cascade');
+        });
     }
 }
