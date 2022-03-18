@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Products;
 
 use App\Http\Controllers\Controller;
+use App\Models\Products\Products;
 use Illuminate\Http\Request;
 use stdClass;
 
@@ -36,7 +37,9 @@ class ProductsController extends Controller
      */
     public function store(stdClass $prod)
     {
-        //
+        
+
+        
     }
 
     /**

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Integrations\IntegrationsController;
 use App\Http\Controllers\Products\ProductsController;
 use App\Jobs\ImportBlingProducts;
+use App\Jobs\ProcessedBlingProducts;
 use App\Models\Bling;
 use App\Models\Integrations\Integrations;
 use Illuminate\Http\Request;
@@ -30,63 +31,60 @@ class BlingController extends Controller
         $data = Bling::select('api_key')->get()->first();
         $apiKey = $data['api_key'];
 
-        $key = new stdClass();
-        $key->key = $apiKey;
-
-        ImportBlingProducts::dispatch($key);
-
         $client = new \GuzzleHttp\Client();
 
-        $pagination = TRUE;
+        $pagination = 0;
         $i = 1;
 
-        $baseUrl = 'https://bling.com.br/Api/v2/produtos/page=' . $i . ' /json/?apikey=' . $key->key;
-        $response = $client->request('GET', $baseUrl, [
-            'form_params' => [
-                'tipo' => 'P'
-            ]
-        ]);
-        $data = $response->getBody();
-        $products = json_decode($data, TRUE);
+        do{
 
-        if(isset($products["retorno"]["erros"][0]["erro"])){
-            $pagination = FALSE;
-        } else{
-            
-            $data = $products["retorno"]["produtos"];
-
-            foreach($data as $product){
+            $baseUrl = 'https://bling.com.br/Api/v2/produtos/page=' . $i . '/json/?apikey=' . $apiKey . '&estoque=S';
+            $response = $client->request('GET', $baseUrl, [
+                'form_params' => [
+                    'tipo' => 'P'
+                ]
+            ]);
+            $data = $response->getBody();
+            $products = json_decode($data, TRUE);
+    
+            if(isset($products["retorno"]["erros"][0]["erro"])){
+                $pagination = 1;
+            } else {
+                $productObject = new stdClass();
+                $prods = $products["retorno"]["produtos"];
                 
-                $data = new ProductsController();
+                foreach($prods as $prod){
+                    $product = $prod['produto'];
+                    
+                    $productObject->code = $product['codigo'];
+                    $productObject->name = $product['descricao'];
+                    $productObject->price = $product['preco'];
+                    $productObject->cost_price = $product['precoCusto'];
+                    $productObject->image_url = $product['imageThumbnail'];
+                    
+                    if($product["situacao"] == "Ativo"){
+                        $productObject->status = 1;
+                    } else{
+                        $productObject->status = 0;
+                    }
 
-                $prod = new stdClass();
-                $prod->code = $product["produto"]["codigo"];
-                $prod->name = $product["produto"]["descricao"];
-                $prod->price = $product["produto"]["preco"];
-                $prod->cost_price = $product["produto"]["precoCusto"];
-                $prod->image_url = $product["produto"]["imageThumbnail"];
-                
-                if($product["produto"]["situacao"] == "Ativo"){
-                    $prod->status = 1;
-                } else{
-                    $prod->status = 0;
+                    if(isset($product["codigoPai"])){
+                        $productObject->type = "variation";
+                    } else if(isset($product["variacoes"])){
+                        $productObject->type = "father";
+                    } else{
+                        $productObject->type = "simple";
+                    }
+
+                    ProcessedBlingProducts::dispatch($productObject);
                 }
                 
-                if(isset($product["produto"]["codigoPai"])){
-                    $prod->type = "variation";
-                } else if(isset($product["produto"]["variacoes"])){
-                    $prod->type = "father";
-                } else{
-                    $prod->type = "simple";
-                }
-
-                $data->store($prod);
+                ++$i;
             }
-        }
 
+        } while ($pagination == 0);
 
-
-        //return redirect()->back()->with('mensage', 'A importação de produtos foi iniciada, aguarde alguns instantes para visualizar os mesmos em seu painel');
+        return redirect()->back()->with('mensage', 'A importação de produtos foi iniciada, aguarde alguns instantes para visualizar os mesmos em seu painel');
 
     }
 

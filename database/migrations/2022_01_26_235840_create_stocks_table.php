@@ -20,9 +20,6 @@ class CreateStocksTable extends Migration
             $table->timestamps();
         });
 
-        Schema::table('products', function (Blueprint $table) {
-            $table->foreignId('stocks_id')->constrained('stocks');
-        });
     }
 
     /**
@@ -33,10 +30,5 @@ class CreateStocksTable extends Migration
     public function down()
     {
         Schema::dropIfExists('stocks');
-
-        Schema::table('stocks', function (Blueprint $table) {
-            $table->foreignId('product_id')
-            ->onDelete('cascade');
-        });
     }
 }
