@@ -16,7 +16,21 @@ class ProductsController extends Controller
      */
     public function index()
     {
-        return view('products.index');
+        if(Products::find(1)->count() > 0){
+            
+            $data = Products::where('type', 'father')
+            ->orWhere('type', 'simple')
+            ->get();
+
+            $d = array($data);
+
+            echo "<pre>", print_r($d), "</pre>";die;
+            
+            return view('products.index');
+        }else{
+            return view('products.index');
+        }
+        
     }
 
     /**

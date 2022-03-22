@@ -19,7 +19,7 @@ class CreateProductsTable extends Migration
             $table->string('name');
             $table->float('price');
             $table->float('coast_price');
-            $table->string('image_url');
+            $table->string('image_url')->default('null');
             $table->integer('status')->default(1);
             $table->char('type',30)->default('simples');
             $table->timestamps();

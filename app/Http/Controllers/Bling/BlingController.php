@@ -60,7 +60,12 @@ class BlingController extends Controller
                     $productObject->name = $product['descricao'];
                     $productObject->price = $product['preco'];
                     $productObject->cost_price = $product['precoCusto'];
-                    $productObject->image_url = $product['imageThumbnail'];
+
+                    if ( $product['imageThumbnail'] == null ) {
+                        $productObject->image_url = "null";
+                    } else { 
+                        $productObject->image_url = $product['imageThumbnail'];
+                    }
                     
                     if($product["situacao"] == "Ativo"){
                         $productObject->status = 1;
