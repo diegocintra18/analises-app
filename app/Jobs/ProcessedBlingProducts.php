@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Http\Controllers\Products\ProductsController;
 use App\Models\Products\Products;
+use App\Models\Products\Stock;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -25,6 +26,7 @@ class ProcessedBlingProducts implements ShouldQueue
     protected $image_url;
     protected $status;
     protected $type;
+    protected $stock;
 
     /**
      * Create a new job instance.
@@ -40,6 +42,7 @@ class ProcessedBlingProducts implements ShouldQueue
         $this->image_url = $productObject->image_url;
         $this->status = $productObject->status;
         $this->type = $productObject->type;
+        $this->stock = $productObject->stock;
     }
 
     /**
@@ -49,6 +52,7 @@ class ProcessedBlingProducts implements ShouldQueue
      */
     public function handle()
     {  
+        $client = new \GuzzleHttp\Client();
 
         if( DB::table('products')->where('sku', $this->code)->exists() ){
             Products::where('sku', $this->code)->update([
@@ -59,8 +63,9 @@ class ProcessedBlingProducts implements ShouldQueue
                 'status' => $this->status,
                 'type' => $this->type
             ]);
+
         } else {
-            Products::create([
+           $data = Products::create([
                 'sku' => $this->code,
                 'name' => $this->name,
                 'price' => $this->price,
@@ -68,6 +73,11 @@ class ProcessedBlingProducts implements ShouldQueue
                 'image_url' => $this->image_url,
                 'status' => $this->status,
                 'type' => $this->type
+            ]);
+
+            Stock::create([
+                'disponibility' => $this->stock,
+                'product_id' => $data->id
             ]);
         }
 

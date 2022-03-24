@@ -20,4 +20,8 @@ class Products extends Model
         'status',
         'type',
     ];
+
+    public function stocks(){
+        return $this->hasMany(Stock::class, 'product_id');
+    }
 }

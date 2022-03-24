@@ -16,18 +16,19 @@ class ProductsController extends Controller
      */
     public function index()
     {
-        if(Products::find(1)->count() > 0){
+        if( Products::first() != null ){
             
             $data = Products::where('type', 'father')
             ->orWhere('type', 'simple')
+            ->with('stocks')
             ->get();
 
-            $d = array($data);
-
-            echo "<pre>", print_r($d), "</pre>";die;
+            $products = json_decode($data, TRUE);
             
-            return view('products.index');
-        }else{
+            echo '<pre>', print_r($products), '</pre>';die;
+            
+            return view('products.index', compact('products'));
+        } else {
             return view('products.index');
         }
         

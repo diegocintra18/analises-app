@@ -81,6 +81,8 @@ class BlingController extends Controller
                         $productObject->type = "simple";
                     }
 
+                    $productObject->stock = $product["estoqueAtual"];
+
                     ProcessedBlingProducts::dispatch($productObject);
                 }
                 
