@@ -22,18 +22,55 @@
 
 @include('layouts.info_message')
 
+
 <div class="row">
     <div class="container-fluid">
         <div class="">
             @if(isset($products))
+                <div class="row">
+                    <div class="container-fluid" style="text-align: center; font-size: 1.4em;">
+                        <div class="col-3 float-left">
+                            <div class="card bg-primary">
+                                <div class="card-header">
+                                    <span>Total em Estoque</span>
+                                </div>
+                                <div class="card-body">{{$stock}}</div>
+                            </div>
+                        </div>
+                        <div class="col-3 float-left">
+                            <div class="card bg-primary">
+                                <div class="card-header">
+                                    Total de Produtos
+                                </div>
+                                <div class="card-body">{{count($products)}}</div>
+                            </div>
+                        </div>
+                        <div class="col-3 float-left">
+                            <div class="card bg-success">
+                                <div class="card-header">
+                                    Custo de estoque
+                                </div>
+                                <div class="card-body">R$ {{ number_format($cost, 2, ',', '.') }}</div>
+                            </div>
+                        </div>
+                        <div class="col-3 float-left">
+                            <div class="card bg-success">
+                                <div class="card-header">
+                                    Valor de venda
+                                </div>
+                                <div class="card-body">R$ {{ number_format($saleOportunity, 2, ',', '.') }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 @foreach ($products as $product)                
                     <div class="col-6 float-left">
                         <div class="card">
                             <div class="card-header">
-                                <span>Posição do ranking: 1ª posição</span>
                                 <div class="float-right">
-                                    <button class="btn btn-warning">Visualizar</button>
-                                    <button class="btn btn-primary">Editar</button>
+                                    <a href="{{ $product["sku"] }}">
+                                        <button class="btn btn-primary">Editar</button>
+                                    </a>
                                 </div>
                             </div>
                             <div class="card-body">
@@ -44,19 +81,16 @@
                                     <div class="col">
                                         <span>{{ $product["name"]}} </span><br>
                                         <span>Código: {{ $product["sku"] }}</span><br>
-                                        <span>Quantidade em estoque: <span class="badge badge-primary">2 unidades</span></span><br>
-                                        <span>Valor de venda: <span class="badge badge-primary">R$ {{ $product["price"] }} </span></span><br>
-                                        <span>Custo: <span class="badge badge-primary">R$ {{ $product["coast_price"] }} </span></span><br>
-                                        <span>Vendas nos últimos 7 dias: <span class="badge badge-success">12 pedidos</span></span><br>
-                                        <span>Faturamento nos últimos 7 dias: <span class="badge badge-success">R$ 280,00</span></span><br>
+                                        <span>Quantidade em estoque: <span class="badge badge-primary"> {{ $product["stocks"][0]["disponibility"] }} unidades</span></span><br>
+                                        <span>Valor de venda: <span class="badge badge-success">R$ {{ $product["price"] }} </span></span><br>
+                                        <span>Custo: <span class="badge badge-success">R$ {{ $product["coast_price"] }} </span></span><br>
                                     </div>
                                 </div>
                             </div>
                             <div class="card-footer">
                                 <div class="row">
                                     <div class="col">
-                                        <span>Canais de Venda:</span> <span class="badge badge-danger">Shopee</span> <span class="badge badge-info">Loja Virtual</span> <span class="badge badge-warning">Mercado Livre</span> 
-                                        <span class="badge badge-danger">B2W</span> <span class="badge badge-warning">Amazon</span>
+                                        <span>Canais de Venda:</span>
                                     </div>
                                 </div>
                             </div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Products;
 
 use App\Http\Controllers\Controller;
 use App\Models\Products\Products;
+use App\Models\Products\Stock;
 use Illuminate\Http\Request;
 use stdClass;
 
@@ -16,6 +17,7 @@ class ProductsController extends Controller
      */
     public function index()
     {
+        // Este método verifica se existem produtos cadastrados, e retorna uma lista de produtos com informações sobre Estoque, Preço, e etc
         if( Products::first() != null ){
             
             $data = Products::where('type', 'father')
@@ -24,12 +26,25 @@ class ProductsController extends Controller
             ->get();
 
             $products = json_decode($data, TRUE);
+
+            $stock = 0;
+            $cost = 0;
+            $saleOportunity = 0;
             
-            echo '<pre>', print_r($products), '</pre>';die;
+            foreach($products as $product){
+                $stock += $product["stocks"][0]["disponibility"];
+                $productCost = $product["coast_price"] * $product["stocks"][0]["disponibility"];
+                $cost += $productCost;
+                $productPrice = $product["price"] * $product["stocks"][0]["disponibility"];
+                $saleOportunity += $productPrice;
+            }
             
-            return view('products.index', compact('products'));
+            return view('products.index', compact('products', 'stock', 'cost', 'saleOportunity'));
+
         } else {
+
             return view('products.index');
+
         }
         
     }
