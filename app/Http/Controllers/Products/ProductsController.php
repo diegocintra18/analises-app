@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Products;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Irroba\IrrobaController;
 use App\Models\Products\Products;
 use App\Models\Products\Stock;
 use Illuminate\Http\Request;
@@ -78,9 +79,32 @@ class ProductsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($sku)
     {
-        //
+        $data = Products::where('sku', '=', $sku)
+        ->with('stocks')
+        ->get();
+
+        $product = json_decode($data, TRUE);
+
+        $irroba = new IrrobaController();
+        $auth = $irroba->getAuthIrroba();
+
+        $client = new \GuzzleHttp\Client();
+
+        $baseUrl = 'https://api.irroba.com.br/v1/product/' . $sku;
+        $response = $client->request('GET', $baseUrl, [
+            'headers' => [
+                'Content-Type'  => 'application/json',
+                'authorization' =>  $auth
+            ]
+        ]);
+
+        $irroba = $response->getBody();
+
+        $products = json_decode($data, TRUE);
+
+        return view('products.details', compact('product'));
     }
 
     /**

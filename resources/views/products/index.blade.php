@@ -68,7 +68,7 @@
                         <div class="card">
                             <div class="card-header">
                                 <div class="float-right">
-                                    <a href="{{ $product["sku"] }}">
+                                    <a href="{{ route('products.details', $product["sku"]) }}">
                                         <button class="btn btn-primary">Editar</button>
                                     </a>
                                 </div>

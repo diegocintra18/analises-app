@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Irroba;
 use App\Http\Controllers\Controller;
 use App\Models\Integrations\Integrations;
 use App\Models\Irroba;
+use App\Models\IrrobaAuthorization;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -24,9 +25,6 @@ class IrrobaController extends Controller
                 ]);
 
                 $this->getAuthIrroba();
-
-                $integration = new Integrations();
-                $integration->saveIntegration('Irroba');
     
                 return redirect()->back()->with('message', "Usuário e senha salvos com sucesso!");
                 
@@ -44,11 +42,11 @@ class IrrobaController extends Controller
         // Está função valida se o usuário e senha informados estão corretos realizando um request na api da Irroba para obter um authorization
 
         $user = $key['user'];
-        $senha = $key['password'];
+        $pass = $key['password'];
         
         $response = Http::post('https://api.irroba.com.br/v1/getToken',[
             'username' => $user,
-            'password' => $senha
+            'password' => $pass
         ]);
 
         $data = json_decode($response, TRUE);
@@ -68,13 +66,13 @@ class IrrobaController extends Controller
         // esta função verifica se já existe um auth no banco válido, se houver ela retorna o mesmo
         // caso não exista ela irá gerar um novo, e atualizar o registro existente
         
-        $user = Irroba::select('authorization', 'updated_at')
+        $user = IrrobaAuthorization::select('authorization', 'updated_at')
                 ->where('id', 1)
                 ->get();
         
         $data = json_decode($user, TRUE);
         
-        if( empty($data) ){
+        if( empty($data) || $data == null ){
             
             // obtém do banco os dados de acesso
             $key = $this->getUserPassIrroba();
@@ -83,8 +81,10 @@ class IrrobaController extends Controller
             $authorizationKey = $this->getNewAuthorization($key);
             
             // atualiza o novo authorization no banco
-            Irroba::where('id', 1)->update(['authorization' => $authorizationKey]);
+            IrrobaAuthorization::create(['authorization' => $authorizationKey]);
 
+            return $authorizationKey;
+            
         } else {
 
             $horaAuth = $data[0]["updated_at"];
@@ -108,7 +108,7 @@ class IrrobaController extends Controller
                 $authorizationKey = $this->getNewAuthorization($key);
 
                 // atualiza o novo authorization no banco
-                Irroba::where('id', 1)->update(['authorization' => $authorizationKey]);
+                IrrobaAuthorization::where('id', 1)->update(['authorization' => $authorizationKey]);
 
                 return $authorizationKey;
             }
@@ -120,7 +120,7 @@ class IrrobaController extends Controller
         // esta função retorna o user e senha da API Irroba do cliente que é necessário
         // para obter o Authorization
         $user = Irroba::select('user', 'password')
-                ->where('id', 1)
+                ->first()
                 ->get();
         
         $data = json_decode($user, TRUE);

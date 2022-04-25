@@ -40,6 +40,7 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/produtos', [ProductsController::class, 'index'])->name('products.index');
+    Route::get('/produto/{sku}', [ProductsController::class, 'show'])->name('products.details');
 });
 
 require __DIR__.'/auth.php';

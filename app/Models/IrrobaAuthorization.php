@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Irroba extends Model
+class IrrobaAuthorization extends Model
 {
     use HasFactory;
 
-    protected $table = 'irroba';
+    protected $table = 'irrobaAuthorization';
 
-    protected $fillable = ['user', 'password'];
+    protected $fillable = ['authorization'];
 }

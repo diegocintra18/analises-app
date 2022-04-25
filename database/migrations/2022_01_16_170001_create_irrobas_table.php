@@ -17,7 +17,13 @@ class CreateIrrobasTable extends Migration
             $table->id();
             $table->string('user');
             $table->string('password');
-            $table->string('authorization')->default(false);
+            $table->timestamp('last_used_at')->nullable();
+            $table->timestamps();
+        });
+        
+        Schema::create('irrobaAuthorization', function (Blueprint $table) {
+            $table->id();
+            $table->string('authorization')->default('false');
             $table->timestamp('last_used_at')->nullable();
             $table->timestamps();
         });
